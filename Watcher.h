@@ -33,8 +33,8 @@ public:
         Watcher(name), thePin(pin) {
         pinMode(pin, INPUT);
     }
-    virtual ~DigitalWatcher() override {}
-    virtual JsonVariant value() {
+    virtual ~DigitalWatcher() {}
+    virtual JsonVariant value() override {
         return JsonVariant(digitalRead(thePin) == HIGH);
     }
 protected:

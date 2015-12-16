@@ -25,8 +25,8 @@ Messenger::~Messenger() {
 }
 
 
-void Messenger::addWatcher(Watcher *Watcher) {
-    watchersList->push(Watcher);
+void Messenger::addWatcher(Watcher *watcher) {
+    watchersList->push(watcher);
 }
 
 

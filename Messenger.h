@@ -9,14 +9,14 @@ class Watcher;
 template <typename T> class List;
 
 /// 信使
-class Messenger {
+class Messenger final {
 public:
     Messenger(unsigned baudRate);
     Messenger(unsigned baudRate, unsigned long timeout);
-    virtual ~Messenger();
-    void addWatcher(Watcher *Watcher);
+    ~Messenger();
+    void addWatcher(Watcher *watcher);
     void work();
-protected:
+private:
     List<Watcher*> *watchersList;
 };
 
