@@ -12,6 +12,7 @@ ArdComLib， _Arduino Communication Library_ ，是一个用于与 [Arduino](htt
 
 软件：
 
+- [x] Arduino IDE 1.6.0
 - [x] Arduino IDE 1.0.6
 - [x] ArduinoJson 5.0.7
 

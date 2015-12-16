@@ -30,7 +30,7 @@ void Messenger::addWatcher(Watcher *Watcher) {
 }
 
 
-void Messenger::listen() {
+void Messenger::work() {
     WatchersDic watchers(watchersList);
     delete watchersList;
     watchersList = NULL;

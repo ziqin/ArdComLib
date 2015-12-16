@@ -15,7 +15,7 @@ public:
     Messenger(unsigned baudRate, unsigned long timeout);
     virtual ~Messenger();
     void addWatcher(Watcher *Watcher);
-    void listen();
+    void work();
 protected:
     List<Watcher*> *watchersList;
 };

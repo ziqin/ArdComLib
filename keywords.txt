@@ -6,6 +6,6 @@ AverageWatcher	KEYWORD1
 MultiWatcher	KEYWORD1
 TransWatcher	KEYWORD1
 
-listen	KEYWORD2
+work	KEYWORD2
 addWatcher	KEYWORD2
 addSensor	KEYWORD2
