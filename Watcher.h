@@ -7,7 +7,7 @@
 
 namespace ACL {
 
-using ArduinoJson::JsonVariant;
+typedef ArduinoJson::JsonVariant Variant;
 
 const char * const null = static_cast<const char*>(0);
 
@@ -17,7 +17,7 @@ public:
     Watcher(const String& name):
         theName(name) {}
     virtual ~Watcher() {}
-    virtual JsonVariant value() = 0;
+    virtual Variant value() = 0;
     const String& name() const {
         return theName;
     }
@@ -34,8 +34,8 @@ public:
         pinMode(pin, INPUT);
     }
     virtual ~DigitalWatcher() {}
-    virtual JsonVariant value() override {
-        return JsonVariant(digitalRead(thePin) == HIGH);
+    virtual Variant value() override {
+        return Variant(digitalRead(thePin) == HIGH);
     }
 protected:
     uint8_t thePin;
@@ -48,8 +48,8 @@ public:
     AnalogWatcher(const String& name, uint8_t pin):
         Watcher(name), thePin(pin) {}
     virtual ~AnalogWatcher() {}
-    virtual JsonVariant value() override {
-        return JsonVariant(analogRead(thePin));
+    virtual Variant value() override {
+        return Variant(analogRead(thePin));
     }
 protected:
     uint8_t thePin;
@@ -61,7 +61,7 @@ class AverageWatcher final: public AnalogWatcher {
 public:
     AverageWatcher(const String& name, uint8_t pin, unsigned times):
         AnalogWatcher(name, pin), theTimes(times) {}
-    JsonVariant value() override;
+    Variant value() override;
 private:
     unsigned theTimes;
 };
@@ -84,10 +84,10 @@ public:
         delete theFunc;
     }
 
-    JsonVariant value() override {
+    Variant value() override {
         if (!(theFunc))
-            return JsonVariant(null);
-        return JsonVariant((*theFunc)(analogRead(thePin)));
+            return Variant(null);
+        return Variant((*theFunc)(analogRead(thePin)));
     }
 
 private:
@@ -131,7 +131,7 @@ public:
     void addSensor(uint8_t pin) {
         sensors.push(pin);
     }
-    JsonVariant value() override;
+    Variant value() override;
 private:
     List<int> sensors;
 };
