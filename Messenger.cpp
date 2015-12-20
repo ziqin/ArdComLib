@@ -53,7 +53,7 @@ void Messenger::work() {
                     if (!w) {
                         status |= 2;
                     } else {
-                        resWatchers[static_cast<const char*>(*i)] = w->value();
+                        resWatchers[i->asString()] = w->value();
                     }
                 }
             } else {
