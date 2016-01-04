@@ -1,6 +1,6 @@
 #include "Watcher.h"
 
-using namespace ACL;
+namespace ACL {
 
 Variant AverageWatcher::value() {
     if (!theTimes)
@@ -22,4 +22,6 @@ Variant MultiWatcher::value() {
     for (List<int>::iterator i = sensors.begin(); i != sensors.end(); ++i)
         sum += analogRead(*i);
     return Variant(sum / size, 4);
+}
+
 }

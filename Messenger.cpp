@@ -5,7 +5,7 @@
 #include "List.h"
 #include "../ArduinoJson/include/ArduinoJson.h"
 
-using namespace ACL;
+namespace ACL {
 
 Messenger::Messenger(unsigned baudRate) {
     Serial.begin(baudRate);
@@ -65,4 +65,6 @@ void Messenger::work() {
             Serial.println();
         }
     }
+}
+
 }

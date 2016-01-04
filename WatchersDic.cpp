@@ -3,7 +3,7 @@
 #include "List.h"
 #include <Arduino.h>
 
-using namespace ACL;
+namespace ACL {
 
 template <typename T>
 inline void swap(T& a, T& b) {
@@ -61,4 +61,6 @@ Watcher* WatchersDic::operator[](const String& name) {
         return watchers[right];
     else
         return NULL;
+}
+
 }
