@@ -80,8 +80,6 @@ public:
         func(func) {}
 
     Variant value() override {
-        if (!func)
-            return Variant(null);
         return Variant(func(analogRead(thePin)));
     }
 
@@ -94,48 +92,16 @@ class TransWatcher final: public AnalogWatcher {
 public:
     TransWatcher(const String& name, uint8_t pin, T (*func)(int)):
         AnalogWatcher(name, pin),
-        func(new IFunc(func)) {}
-
-    TransWatcher(const String& name, uint8_t pin, T (*func)(unsigned)):
-        AnalogWatcher(name, pin),
-        func(new UFunc(func)) {}
-
-    ~TransWatcher() {
-        delete func;
-    }
+        func(func) {}
 
     Variant value() override {
         if (!func)
             return Variant(null);
-        return Variant((*func)(analogRead(thePin)));
+        return Variant(func(analogRead(thePin)));
     }
 
 private:
-    class FuncBase {
-    public:
-        virtual T operator()(unsigned n) const = 0;
-        virtual ~FuncBase() = default;
-    } *func;
-
-    class IFunc final: public FuncBase {
-    public:
-        IFunc(T (*func)(int)): func(func) {}
-        T operator()(unsigned n) const override {
-            return func(n);
-        }
-    private:
-        T (*func)(int);
-    };
-
-    class UFunc final: public FuncBase {
-    public:
-        UFunc(T (*func)(unsigned)): func(func) {}
-        T operator()(unsigned n) const override {
-            return func(n);
-        }
-    private:
-        T (*func)(unsigned);
-    };
+    T (*func)(int);
 };
 #endif
 
