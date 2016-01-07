@@ -9,7 +9,7 @@ class Watcher;
 template <typename T> class List;
 
 
-/// Watchers 查找字典，O(n^2)
+/// Watchers 查找字典，O(log2(n))
 class WatchersDic final {
 public:
     WatchersDic(const List<Watcher*> *watchersList);
