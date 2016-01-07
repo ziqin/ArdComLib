@@ -2,16 +2,19 @@
 #include "Watcher.h"
 #include "List.h"
 #include <Arduino.h>
+#include <stdlib.h>
 
 using namespace ACL;
 
-template <typename T>
-inline void swap(T& a, T& b) {
-    T tmp = a;
-    a = b;
-    b = tmp;
+int cmp_Watcher_by_name(const void *_left, const void *_right) {
+    if (!(_left && _right))
+        return 1;
+    const Watcher *left = static_cast<const Watcher*>(_left);
+    const Watcher *right = static_cast<const Watcher*>(_right);
+    return left->name() < right->name() ?
+           -1 :
+           left->name() != right->name();
 }
-
 
 WatchersDic::WatchersDic(const List<Watcher*> *watchersList) {
     if (!watchersList) {
@@ -27,11 +30,7 @@ WatchersDic::WatchersDic(const List<Watcher*> *watchersList) {
     }
 
     // 对 watchers 按 name 排序
-    // O(n^2) （实际应用中，watchers[] 的元素个数通常不多）
-    for (unsigned i = 0; i < size; ++i)
-        for (unsigned j = i; j < size; ++j)
-            if (watchers[i] && watchers[j] && watchers[i]->name() > watchers[j]->name())
-                swap(watchers[i], watchers[j]);
+    qsort(watchers, size, sizeof(Watcher*), cmp_Watcher_by_name);
 }
 
 
@@ -43,22 +42,8 @@ WatchersDic::~WatchersDic() {
 /// 查找 name 匹配的 watcher，返回其指针
 /// 若找不到，则返回 NULL
 Watcher* WatchersDic::operator[](const String& name) {
-    if (!size)
-        return NULL;
-
-    // 二分查找
-    unsigned left = 0, right = size - 1;
-    while (right - left > 1) {
-        unsigned mid = (left + right) >> 1;
-        if (watchers[mid]->name() > name)
-            right = mid;
-        else
-            left = mid;
-    }
-    if (watchers[left]->name() == name)
-        return watchers[left];
-    else if (watchers[right]->name() == name)
-        return watchers[right];
-    else
-        return NULL;
+    Watcher *w = new Watcher(name);
+    Watcher *ans = *static_cast<Watcher**>(bsearch(w, watchers, size, sizeof(Watcher*), cmp_Watcher_by_name));
+    delete w;
+    return ans;
 }

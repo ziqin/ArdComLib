@@ -17,7 +17,9 @@ public:
     Watcher(const String& name):
         theName(name) {}
     virtual ~Watcher() {}
-    virtual Variant value() = 0;
+    virtual Variant value() {
+        return Variant(null);
+    }
     const String& name() const {
         return theName;
     }
