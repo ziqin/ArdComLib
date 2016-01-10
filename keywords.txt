@@ -6,8 +6,10 @@ AnalogWatcher	KEYWORD1
 AverageWatcher	KEYWORD1
 MultiWatcher	KEYWORD1
 TransWatcher	KEYWORD1
+TaskWorker	KEYWORD1
 Variant	KEYWORD1
 
 work	KEYWORD2
 addWatcher	KEYWORD2
+addWorker	KEYWORD2
 addSensor	KEYWORD2
