@@ -1,7 +1,7 @@
 #include <Arduino.h>
 #include "Messenger.h"
 #include "Watcher.h"
-#include "WatchersDic.h"
+#include "NameDic.h"
 #include "List.h"
 #include "../ArduinoJson/include/ArduinoJson.h"
 
@@ -31,7 +31,7 @@ void Messenger::addWatcher(Watcher *watcher) {
 
 
 void Messenger::work() {
-    WatchersDic watchers(watchersList);
+    NameDic<Watcher> watchers(watchersList);
     delete watchersList;
     watchersList = NULL;
 
