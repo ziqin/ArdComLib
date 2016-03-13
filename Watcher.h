@@ -4,6 +4,9 @@
 #include <Arduino.h>
 #include "../ArduinoJson/include/ArduinoJson/JsonVariant.hpp"
 #include "List.h"
+#if __cplusplus > 199711L // C++ 11+
+#include "Vlpp/Function.h"
+#endif
 
 namespace ACL {
 
@@ -66,61 +69,41 @@ private:
     unsigned theTimes;
 };
 
-
 /// 使用用户指定函数映射模拟信号传感器读数
 /// 模板参数为用户指定函数的返回值的类型
+#if __cplusplus > 199711L // support lambda closure if C++ 11+
+template <typename T>
+class TransWatcher final: public AnalogWatcher {
+public:
+    TransWatcher(const String& name, uint8_t pin, vl::Func<T(int)> func):
+        AnalogWatcher(name, pin),
+        func(func) {}
+
+    Variant value() override {
+        return Variant(func(analogRead(thePin)));
+    }
+
+private:
+    vl::Func<T(int)> func;
+};
+#else
 template <typename T>
 class TransWatcher final: public AnalogWatcher {
 public:
     TransWatcher(const String& name, uint8_t pin, T (*func)(int)):
         AnalogWatcher(name, pin),
-        theFunc(new IntFunc(func)) {}
-
-    TransWatcher(const String& name, uint8_t pin, T (*func)(unsigned)):
-        AnalogWatcher(name, pin),
-        theFunc(new UnintFunc(func)) {}
-
-    ~TransWatcher() {
-        delete theFunc;
-    }
+        func(func) {}
 
     Variant value() override {
-        if (!(theFunc))
+        if (!func)
             return Variant(null);
-        return Variant((*theFunc)(analogRead(thePin)));
+        return Variant(func(analogRead(thePin)));
     }
 
 private:
-    class FuncBase {
-    protected:
-        union {
-            T (*iFunc)(int);
-            T (*uFunc)(unsigned);
-        } f;
-    public:
-        virtual T operator()(unsigned n) const = 0;
-    } *theFunc;
-
-    class IntFunc final: public FuncBase {
-    public:
-        IntFunc(T (*func)(int)) {
-            FuncBase::f.iFunc = func;
-        }
-        T operator()(unsigned n) const {
-            return FuncBase::f.iFunc(n);
-        }
-    };
-
-    class UnintFunc final: public FuncBase {
-    public:
-        UnintFunc(T (*func)(unsigned)) {
-            FuncBase::f.uFunc = func;
-        }
-        T operator()(unsigned n) const {
-            return FuncBase::f.uFunc(n);
-        }
-    };
+    T (*func)(int);
 };
+#endif
 
 
 /// 读取多个模拟信号传感器，并取平均值

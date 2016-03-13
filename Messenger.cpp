@@ -1,11 +1,12 @@
 #include <Arduino.h>
 #include "Messenger.h"
 #include "Watcher.h"
-#include "WatchersDic.h"
+#include "Worker.h"
+#include "NameDic.h"
 #include "List.h"
 #include "../ArduinoJson/include/ArduinoJson.h"
 
-using namespace ACL;
+namespace ACL {
 
 Messenger::Messenger(unsigned baudRate) {
     Serial.begin(baudRate);
@@ -30,10 +31,18 @@ void Messenger::addWatcher(Watcher *watcher) {
 }
 
 
+void Messenger::addWorker(TaskWorker *worker) {
+    workersList->push(worker);
+}
+
+
 void Messenger::work() {
-    WatchersDic watchers(watchersList);
+    NameDic<Watcher> watchers(watchersList);
     delete watchersList;
     watchersList = NULL;
+    NameDic<TaskWorker> workers(workersList);
+    delete workersList;
+    workersList = NULL;
 
     for (;;) {
         int status = 0;
@@ -45,15 +54,28 @@ void Messenger::work() {
             StaticJsonBuffer<100> reqBuffer;
             JsonObject& req = reqBuffer.parseObject(reqStr);
 
-            if (req.success() && req.containsKey("watchers")) {
-                JsonArray& reqWatchers = req["watchers"];
-                JsonObject& resWatchers = res.createNestedObject("watchers");
-                for (JsonArray::const_iterator i = reqWatchers.begin(); i != reqWatchers.end(); ++i) {
-                    Watcher *w = watchers[*i];
-                    if (!w) {
-                        status |= 2;
-                    } else {
-                        resWatchers[static_cast<const char*>(*i)] = w->value();
+            if (req.success()) {
+                if (req.containsKey("watchers")) {
+                    JsonArray& reqWatchers = req["watchers"];
+                    JsonObject& resWatchers = res.createNestedObject("watchers");
+                    for (JsonArray::const_iterator i = reqWatchers.begin(); i != reqWatchers.end(); ++i) {
+                        Watcher *w = watchers[*i];
+                        if (w) {
+                            resWatchers[i->asString()] = w->value();
+                        } else {
+                            status |= 2;
+                        }
+                    }
+                }
+                if (req.containsKey("workers")) {
+                    JsonArray& reqWorkers = req["workers"];
+                    for (JsonArray::const_iterator i = reqWorkers.begin(); i != reqWorkers.end(); ++i) {
+                        TaskWorker *w = workers[*i];
+                        if (w) {
+                            w->work();
+                        } else {
+                            status |= 2;
+                        }
                     }
                 }
             } else {
@@ -65,4 +87,6 @@ void Messenger::work() {
             Serial.println();
         }
     }
+}
+
 }

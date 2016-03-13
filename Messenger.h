@@ -1,11 +1,10 @@
 #ifndef Messenger_h
 #define Messenger_h
 
-class String;
-
 namespace ACL {
 
 class Watcher;
+class TaskWorker;
 template <typename T> class List;
 
 /// 信使
@@ -15,9 +14,11 @@ public:
     Messenger(unsigned baudRate, unsigned long timeout);
     ~Messenger();
     void addWatcher(Watcher *watcher);
+    void addWorker(TaskWorker *worker);
     void work();
 private:
     List<Watcher*> *watchersList;
+    List<TaskWorker*> *workersList;
 };
 
 } // namespace: ACL
