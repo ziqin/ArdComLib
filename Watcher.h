@@ -5,7 +5,7 @@
 #include "../ArduinoJson/include/ArduinoJson/JsonVariant.hpp"
 #include "List.h"
 #if __cplusplus > 199711L // C++ 11+
-#include "Vlpp/Function.h"
+#include "functional-vlpp/src/functional-vlpp.h"
 #endif
 
 namespace ACL {
